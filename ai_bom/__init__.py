@@ -1,0 +1,2 @@
+"""AI BOM simulation helpers."""
+
