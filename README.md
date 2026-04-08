@@ -13,7 +13,7 @@ tuned to the α-weight vector `[0.25, 0.20, 0.20, 0.15, 0.20]`.
 ai_bom/                # Core Python modules
   ├─ ai_graph_generator.py        # Builds AI/ML dependency graphs
   ├─ ai_unweighted_top20.py       # Unweighted betweenness + PageRank plots
-  ├─ ai_weighted_monte_carlo.py   # Weighted Monte Carlo simulations (5k trials)
+  ├─ ai_weighted_monte_carlo.py   # Weighted Monte Carlo simulations (25k trials)
   ├─ ai_image_creation.py         # HTML → PNG conversion via Playwright
   └─ ai_graph_visualization.py    # Pyvis network view (AI_BOM_graph.html)
 ai_outputs/            # HTML + CSV outputs (graph viz, plots, summaries)
@@ -58,12 +58,12 @@ playwright install chromium
    - `top20_betweenness_bar.html` + CSV snapshot
    - `top20_pagerank_bar.html` + CSV snapshot
 
-3. **Weighted Monte Carlo (5k sims, α=[0.25,0.20,0.20,0.15,0.20])**
+3. **Weighted Monte Carlo (25k sims, α=[0.2345588235,0.1876470588,0.1876470588,0.2025,0.1876470588])**
    ```bash
    python -m ai_bom.ai_weighted_monte_carlo
    ```
    Creates for each distribution (lognormal & pareto):
-   - Betweenness/PageRank box plots (`montecarlo_*_5000/*.html`)
+   - Betweenness/PageRank box plots (`montecarlo_*_25000/*.html`)
    - Samples + summary CSVs
    - Ranked top-20 box plots (`*_top20_ranked.html`)
 
@@ -80,7 +80,7 @@ playwright install chromium
 
 - `ai_outputs/AI_BOM_graph.html` – interactive Pyvis visualization of the AI BOM network.
 - `ai_outputs/unweighted/<dist>/top20_*` – bar charts + CSVs for betweenness/PageRank.
-- `ai_outputs/weighted/<dist>/montecarlo_*_5000/` – Monte Carlo diagnostics, summary stats,
+- `ai_outputs/weighted/<dist>/montecarlo_*_25000/` – Monte Carlo diagnostics, summary stats,
   and top-20 ranked box plots.
 - `ai_images/*.png` – final eight images ready for reports:
   - `unweighted_betweenness_lognormal.png`

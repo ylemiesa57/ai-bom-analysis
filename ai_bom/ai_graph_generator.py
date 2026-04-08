@@ -123,23 +123,12 @@ def _connect_components(G: nx.DiGraph, rng: np.random.Generator) -> None:
             G.add_edge(v, u)
 
 
-def generate_ai_bom_graph(
-    n_nodes: int = 500,
-    distribution: str = "lognormal",
-    seed: int | None = 42,
+def _generate_layered_ai_graph(
+    n_nodes: int,
+    distribution: str,
+    rng: np.random.Generator,
 ) -> nx.DiGraph:
-    """
-    Build an AI BOM graph with the requested degree distribution.
-
-    Args:
-        n_nodes: Number of nodes to generate.
-        distribution: "lognormal" or "pareto".
-        seed: RNG seed for reproducibility.
-    """
-    if distribution not in {"lognormal", "pareto"}:
-        raise ValueError("distribution must be 'lognormal' or 'pareto'")
-
-    rng = np.random.default_rng(seed)
+    """Generate the original AI-typed layered graph."""
     node_types = _assign_node_types(n_nodes, rng)
     node_order: List[str] = list(node_types.keys())
 
@@ -176,11 +165,113 @@ def generate_ai_bom_graph(
     return G
 
 
+def _generate_software_like_ai_graph(
+    n_nodes: int,
+    distribution: str,
+    rng: np.random.Generator,
+    lognormal_mean: float,
+    lognormal_sigma: float,
+    pareto_alpha: float,
+    pareto_scale: float,
+    min_degree: int,
+    max_degree: int,
+) -> nx.DiGraph:
+    """
+    Generate AI graph with the same structure logic as software SBOM generation:
+    sample in-degree targets globally, then attach random sources.
+    """
+    G = nx.DiGraph()
+    nodes = [f"ai_node_{idx}" for idx in range(n_nodes)]
+    G.add_nodes_from(nodes)
+    for node in nodes:
+        G.nodes[node]["node_type"] = "component"
+
+    if distribution == "lognormal":
+        target_in_degree = np.clip(
+            np.round(rng.lognormal(mean=lognormal_mean, sigma=lognormal_sigma, size=n_nodes)).astype(int),
+            min_degree,
+            max_degree,
+        )
+    else:
+        target_in_degree = np.clip(
+            np.round(rng.pareto(pareto_alpha, size=n_nodes) * pareto_scale).astype(int),
+            min_degree,
+            max_degree,
+        )
+
+    for tgt_idx, n_edges in enumerate(target_in_degree):
+        tgt = nodes[tgt_idx]
+        if n_edges <= 0:
+            continue
+        possible_sources = [node for node in nodes if node != tgt]
+        sources = rng.choice(possible_sources, size=min(n_edges, len(possible_sources)), replace=False)
+        for src in sources:
+            G.add_edge(src, tgt)
+
+    # Mirror software generator rule: the first node has no incoming edges.
+    root = nodes[0]
+    for pred in list(G.predecessors(root)):
+        G.remove_edge(pred, root)
+
+    return G
+
+
+def generate_ai_bom_graph(
+    n_nodes: int = 500,
+    distribution: str = "lognormal",
+    seed: int | None = 42,
+    generation_mode: str = "software_like",
+    lognormal_mean: float = 1.0,
+    lognormal_sigma: float = 0.7,
+    pareto_alpha: float = 1.5,
+    pareto_scale: float = 1.0,
+    min_degree: int = 0,
+    max_degree: int = 30,
+) -> nx.DiGraph:
+    """
+    Build an AI BOM graph with the requested degree distribution.
+
+    Args:
+        n_nodes: Number of nodes to generate.
+        distribution: "lognormal" or "pareto".
+        seed: RNG seed for reproducibility.
+        generation_mode: "software_like" for software-matching structure logic,
+            or "layered" for the original AI typed-layer generator.
+        lognormal_mean: Global lognormal mean for software_like mode.
+        lognormal_sigma: Global lognormal sigma for software_like mode.
+        pareto_alpha: Global pareto alpha for software_like mode.
+        pareto_scale: Global pareto scale for software_like mode.
+        min_degree: Minimum sampled in-degree for software_like mode.
+        max_degree: Maximum sampled in-degree for software_like mode.
+    """
+    if distribution not in {"lognormal", "pareto"}:
+        raise ValueError("distribution must be 'lognormal' or 'pareto'")
+
+    if generation_mode not in {"software_like", "layered"}:
+        raise ValueError("generation_mode must be 'software_like' or 'layered'")
+
+    rng = np.random.default_rng(seed)
+    if generation_mode == "layered":
+        return _generate_layered_ai_graph(n_nodes=n_nodes, distribution=distribution, rng=rng)
+
+    return _generate_software_like_ai_graph(
+        n_nodes=n_nodes,
+        distribution=distribution,
+        rng=rng,
+        lognormal_mean=lognormal_mean,
+        lognormal_sigma=lognormal_sigma,
+        pareto_alpha=pareto_alpha,
+        pareto_scale=pareto_scale,
+        min_degree=min_degree,
+        max_degree=max_degree,
+    )
+
+
 if __name__ == "__main__":
     out_dir = Path("ai_outputs/diagnostics")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     for dist in ("lognormal", "pareto"):
-        graph = generate_ai_bom_graph(n_nodes=200, distribution=dist, seed=7)
+        graph = generate_ai_bom_graph(n_nodes=1000, distribution=dist, seed=7)
         print(f"[AI BOM] {dist}: nodes={graph.number_of_nodes()}, edges={graph.number_of_edges()}")
 

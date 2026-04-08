@@ -24,9 +24,10 @@ NODE_COLORS = {
 
 def build_ai_bom_visualization(
     distribution: str = "lognormal",
-    n_nodes: int = 500,
+    n_nodes: int = 1000,
     seed: int = 42,
     output_path: str = "ai_outputs/AI_BOM_graph.html",
+    generation_mode: str = "software_like",
 ) -> Path:
     """
     Create a Pyvis HTML visualization for the AI BOM graph.
@@ -36,8 +37,14 @@ def build_ai_bom_visualization(
         n_nodes: Number of nodes in the generated graph.
         seed: Random seed for reproducibility.
         output_path: Where to write the HTML file.
+        generation_mode: Graph generation mode forwarded to the generator.
     """
-    G = generate_ai_bom_graph(n_nodes=n_nodes, distribution=distribution, seed=seed)
+    G = generate_ai_bom_graph(
+        n_nodes=n_nodes,
+        distribution=distribution,
+        seed=seed,
+        generation_mode=generation_mode,
+    )
 
     net = Network(height="750px", width="100%", directed=True, notebook=False)
     positions = nx.spring_layout(G, seed=seed)
