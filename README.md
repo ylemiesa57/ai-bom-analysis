@@ -109,5 +109,4 @@ playwright install chromium
 - Add CLI arguments (e.g., `--distribution`, `--n-simulations`) for finer-grained control.
 - Wire the outputs into downstream reporting notebooks or dashboards.
 
-Questions? Ping the UROP team on Slack/Teams with a link to this folder so they can
-reproduce your results quickly. Happy analyzing!
+Questions? Ping email yaphet.lemiesa@gmail.com
