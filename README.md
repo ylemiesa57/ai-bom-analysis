@@ -3,7 +3,8 @@
 End-to-end toolkit for analyzing AI/ML supply-chain bills of materials (AI BOMs).
 It mirrors the SBOM workflow from `canon_urop/node_exploitability` but swaps in
 an AI-specific graph generator, Monte Carlo risk simulator, and image pipeline
-tuned to the α-weight vector `[0.25, 0.20, 0.20, 0.15, 0.20]`.
+tuned to the α-weight vector `[0.10, 0.15, 0.15, 0.30, 0.30]` (CVEs, Misconfigs,
+WeakControls, 1 - DataQuality, Exploitability).
 
 ---
 
@@ -58,7 +59,7 @@ playwright install chromium
    - `top20_betweenness_bar.html` + CSV snapshot
    - `top20_pagerank_bar.html` + CSV snapshot
 
-3. **Weighted Monte Carlo (25k sims, α=[0.2345588235,0.1876470588,0.1876470588,0.2025,0.1876470588])**
+3. **Weighted Monte Carlo (25k sims, α=[0.10,0.15,0.15,0.30,0.30])**
    ```bash
    python -m ai_bom.ai_weighted_monte_carlo
    ```
