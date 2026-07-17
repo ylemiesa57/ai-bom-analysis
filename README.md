@@ -31,9 +31,15 @@ LICENSE                # MIT
 cd /Users/yaphetlemiesa/UROP_2025_fall/ai-bom-analysis
 python3 -m venv .venv && source .venv/bin/activate  # optional but recommended
 pip install --upgrade pip
-pip install networkx numpy scipy pandas plotly pyvis tqdm playwright
+pip install -r requirements.txt
 playwright install chromium
 ```
+
+`requirements.txt` tracks the packages this toolkit actually imports (including
+`pillow`, needed by `ai_bom/create_multisize_2x8_grid.py` and
+`ai_bom/create_plot_grid.py` for the PNG grid assembly, which the old inline
+pip command here omitted). `tqdm` was listed previously but isn't imported
+anywhere in `ai_bom/`, so it's been dropped.
 
 - Playwright is required for `ai_image_creation.py`. Running `playwright install chromium`
   once per machine resolves the `sync_playwright` import error.

@@ -1,0 +1,8 @@
+networkx
+numpy
+scipy
+pandas
+plotly
+pyvis
+playwright
+pillow
