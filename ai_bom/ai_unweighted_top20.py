@@ -14,6 +14,7 @@ import networkx as nx
 import pandas as pd
 import plotly.graph_objects as go
 import colorsys
+import zlib
 
 from ai_bom.ai_graph_generator import generate_ai_bom_graph
 
@@ -46,8 +47,14 @@ def _get_node_color(node_name: str, lighter: bool = False) -> str:
     if node_name.startswith("ai_node_"):
         node_id = int(node_name.replace("ai_node_", ""))
     else:
-        # Fallback: use hash of node name
-        node_id = hash(node_name) % 1000
+        # Fallback: derive a stable id from the node name. Python's
+        # built-in hash() is randomized per-process for str/bytes
+        # (PYTHONHASHSEED), so node_id -- and therefore this node's
+        # color -- would silently change between runs/processes despite
+        # this function's docstring promising a "deterministic mapping".
+        # zlib.crc32 is a fixed, portable, non-randomized hash, so the
+        # same node name always maps to the same color.
+        node_id = zlib.crc32(node_name.encode("utf-8")) % 1000
     
     # Use HSV color space for better color distribution
     # Use node_id to determine hue (0-360 degrees)
