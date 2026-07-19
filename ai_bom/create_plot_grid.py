@@ -128,6 +128,7 @@ def create_grid(plot_paths: List[Tuple[str, str, str, str]], grid_size: Tuple[in
         if html_path is None:
             print(f"[WARNING] Could not find HTML file matching: {html_pattern}")
             # Create a blank placeholder
+            Path(temp_png).parent.mkdir(parents=True, exist_ok=True)
             temp_img = Image.new('RGB', (800, 600), color='white')
             temp_img.save(temp_png)
             temp_images.append(temp_png)
