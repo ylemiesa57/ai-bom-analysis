@@ -444,7 +444,16 @@ def run_ai_weighted_analysis(
 ) -> None:
     """Run full Monte Carlo analysis (regenerates simulations)."""
     if squash_params is None:
-        squash_params = {"beta": 0.6}
+        # Each squash function in SQUASH_FUNCS declares its own default
+        # parameter values (see their signatures above), so the caller-
+        # facing default here should just be "use whatever that function
+        # already defaults to" rather than a hardcoded dict. Hardcoding
+        # {"beta": 0.6} (tanh's parameter name) used to crash outright for
+        # squash="capped" (its parameter is "gamma", not "beta") and
+        # silently override squash="logistic"'s own default beta=1.0 with
+        # tanh's 0.6 -- neither was ever caught because every call site in
+        # this repo only ever uses the default squash="tanh".
+        squash_params = {}
 
     dist_root = OUTPUT_ROOT / distribution
     bc_dir = dist_root / f"montecarlo_bc_{n_simulations}"
