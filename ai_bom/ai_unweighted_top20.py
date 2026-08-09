@@ -133,7 +133,6 @@ def _save_top20_bar_chart(
 
     metric_acronym = _get_metric_acronym(metric_name)
     metric_full = _get_metric_full_name(metric_name)
-    metric_acronym = _get_metric_acronym(metric_name)
 
     fig.update_layout(
         title=f"Top 20 Nodes by {metric_acronym} ({distribution.title()})",
