@@ -1,5 +1,5 @@
 """
-Create a 2x4 grid (8 plots total) of AI BOM plots and save to ai_image folder.
+Create a 2x4 grid (8 plots total) of AI BOM plots and save to ai_images folder.
 Also saves individual images to final_images folder.
 """
 
@@ -14,7 +14,7 @@ from PIL import Image
 from playwright.sync_api import sync_playwright  # type: ignore[import]
 
 
-OUTPUT_DIR = Path("ai_image1")
+OUTPUT_DIR = Path("ai_images")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 FINAL_IMAGES_DIR = Path("final_images")
