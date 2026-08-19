@@ -179,7 +179,7 @@ def create_grid(plot_paths: List[Tuple[str, str, str, str]], grid_size: Tuple[in
 
 
 if __name__ == "__main__":
-    print("Creating 4x4 grid of all plots...")
+    print("Creating 2x4 grid of all plots...")
     plot_paths = get_plot_paths()
     create_grid(plot_paths)
     print("\nDone!")
